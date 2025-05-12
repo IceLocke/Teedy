@@ -2,7 +2,7 @@ pipeline {
  agent any
 
  environment {
-    DOCKER_HUB_CREDENTIALS = credentials('1')
+    DOCKER_HUB_CREDENTIALS = credentials('dockerhub_credentials')
     DOCKER_IMAGE = 'icelocke/teedy-app'
     DOCKER_TAG = "${env.BUILD_NUMBER}"
  }
