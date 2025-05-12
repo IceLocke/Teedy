@@ -29,21 +29,21 @@ pipeline {
  }
  }
 
- // Uploading Docker images into Docker Hub
- stage('Upload image') {
- steps {
- script {
- // sign in Docker Hub
- docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
- // push image
-docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
+//  // Uploading Docker images into Docker Hub
+//  stage('Upload image') {
+//  steps {
+//  script {
+//  // sign in Docker Hub
+//  docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
+//  // push image
+// docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push()
 
-// ：optional: label latest
-docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push('latest')
- }
- }
- }
- }
+// // ：optional: label latest
+// docker.image("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}").push('latest')
+//  }
+//  }
+//  }
+//  }
 
  // Running Docker container
  stage('Run containers') {
