@@ -3,7 +3,7 @@ pipeline {
 
  environment {
     DOCKER_HUB_CREDENTIALS = credentials('1')
-    DOCKER_IMAGE = 'ice;pcle/teedy-app'
+    DOCKER_IMAGE = 'icelocke/teedy-app'
     DOCKER_TAG = "${env.BUILD_NUMBER}"
  }
 
