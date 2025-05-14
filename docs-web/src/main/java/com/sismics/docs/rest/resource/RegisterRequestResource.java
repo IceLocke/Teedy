@@ -34,7 +34,7 @@ public class RegisterRequestResource extends BaseResource {
     /**
      * Send a register request to admin
      *
-     * @api {post} /register-request Send a register request to admin.
+     * @api {post} /register-request Send a register request to admin
      * @apiName PostRegisterRequest
      * @apiGroup RegisterRequest
      * @apiParam {String{3..50}} username Username
