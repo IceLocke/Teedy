@@ -130,6 +130,17 @@ public class RegisterRequestResource extends BaseResource {
         return Response.ok().entity(response.build()).build();
     }
 
+    /**
+     * Accept a register request
+     * @api {post} /register-request/accept Accept register request
+     * @apiName AcceptRegisterRequest
+     * @apiGroup RegisterRequest
+     * @apiParam {String} id Request id
+     * @apiSuccess status Status OK
+     * @apiError (client) NoRequest No such request
+     * @param id Register request's id
+     * @return Response
+     */
     @POST
     @Path("accept")
     public Response acceptRegisterRequest(
@@ -141,6 +152,10 @@ public class RegisterRequestResource extends BaseResource {
 
         RegisterRequestDao dao = new RegisterRequestDao();
         RegisterRequest request = dao.getById(id);
+
+        if (request == null) {
+            throw new ClientException("NoRequest", "Register request not found");
+        }
 
         // Create the user
         User user = new User();
@@ -169,6 +184,17 @@ public class RegisterRequestResource extends BaseResource {
         return Response.ok().entity(response.build()).build();
     }
 
+    /**
+     * Accept a register request
+     * @api {post} /register-request/reject Accept register request
+     * @apiName AcceptRegisterRequest
+     * @apiGroup RegisterRequest
+     * @apiParam {String} id Request id
+     * @apiSuccess status Status OK
+     * @apiError (client) NoRequest No such request
+     * @param id Register request's id
+     * @return Response
+     */
     @POST
     @Path("reject")
     public Response rejectRegisterRequest(
@@ -179,6 +205,10 @@ public class RegisterRequestResource extends BaseResource {
         checkBaseFunction(BaseFunction.ADMIN);
 
         RegisterRequestDao dao = new RegisterRequestDao();
+        RegisterRequest request = dao.getById(id);
+        if (request == null) {
+            throw new ClientException("NoRequest", "Register request not found");
+        }
         dao.processRequest(id, RegisterRequestStatusType.REJECT);
 
         JsonObjectBuilder response = Json.createObjectBuilder()
