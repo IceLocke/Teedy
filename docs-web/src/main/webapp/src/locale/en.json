@@ -7,6 +7,7 @@
     "validation_code": "Validation code",
     "remember_me": "Remember me",
     "submit": "Sign in",
+    "register": "Send Register Request",
     "login_as_guest": "Login as guest",
     "login_failed_title": "Login failed",
     "login_failed_message": "Username or password invalid",
@@ -297,9 +298,13 @@
     },
     "user": {
       "title": "Users management",
+      "requests": "Register Requests",
       "add_user": "Add a user",
       "username": "Username",
       "create_date": "Create date",
+      "action": "Action",
+      "accept": "Accept",
+      "reject": "Reject",
       "totp_enabled": "Two-factor authentication enabled for this account",
       "edit": {
         "delete_user_title": "Delete user",
@@ -620,6 +625,13 @@
       "title": "Tags",
       "description": "Documents can be organized in tags (which are like super-folders). Create them here."
     }
+  },
+  "register": {
+    "title": "Regitser Request",
+    "message": "Please enter your information to register on Teedy. The administrator will receive your request and process it. Once it was accepted, you will be able to login.",
+    "username": "Username",
+    "email": "E-mail",
+    "password": "Password"
   },
   "yes": "Yes",
   "no": "No",
