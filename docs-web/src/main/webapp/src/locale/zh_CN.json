@@ -249,6 +249,10 @@
     "menu_server_logs": "服务器日志",
     "user": {
       "title": "用户 <small>管理</small>",
+      "requests": "注册请求",
+      "action": "操作",
+      "accept": "同意",
+      "reject": "拒绝",
       "add_user": "添加用户",
       "username": "用户名",
       "create_date": "创建日期",

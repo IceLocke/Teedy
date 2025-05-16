@@ -297,9 +297,13 @@
     },
     "user": {
       "title": "Users management",
+      "requests": "Register Requests",
       "add_user": "Add a user",
       "username": "Username",
       "create_date": "Create date",
+      "action": "Action",
+      "accept": "Accept",
+      "reject": "Reject",
       "totp_enabled": "Two-factor authentication enabled for this account",
       "edit": {
         "delete_user_title": "Delete user",

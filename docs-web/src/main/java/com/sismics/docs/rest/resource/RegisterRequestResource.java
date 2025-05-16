@@ -185,9 +185,9 @@ public class RegisterRequestResource extends BaseResource {
     }
 
     /**
-     * Accept a register request
-     * @api {post} /register-request/reject Accept register request
-     * @apiName AcceptRegisterRequest
+     *Reject a register request
+     * @api {post} /register-request/reject Reject register request
+     * @apiName RejectRegisterRequest
      * @apiGroup RegisterRequest
      * @apiParam {String} id Request id
      * @apiSuccess status Status OK
