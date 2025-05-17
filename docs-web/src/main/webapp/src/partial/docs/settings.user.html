@@ -30,3 +30,47 @@
     <div ui-view="user"></div>
   </div>
 </div>
+
+<h1>
+  <span translate="settings.user.requests"></span>
+</h1>
+
+<div class="row">
+  <div class="col-md-6 well">
+    <table class="table table-hover table-users">
+      <thead>
+        <tr>
+          <th>{{ 'settings.user.username' | translate }}</th>
+          <th>{{ 'settings.user.edit.email' | translate }}</th>
+          <th>{{ 'settings.user.create_date' | translate }}</th>
+          <th>{{ 'settings.user.action' | translate }}
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="req in registerRequests | orderBy: 'username'">
+          <td>
+            <span>{{ req.username }}</span>
+          </td>
+          <td>
+            <span>{{ req.email }}</span>
+          </td>
+          <td>{{ req.create_timestamp | date: dateFormat }}</td>
+          <td>
+            <div class="btn-group" role="group" aria-label="...">
+              <button type="button" class="btn btn-success" ng-click="accept(req.id)">
+                <span>{{ 'settings.user.accept' | translate }}</span>
+              </button>
+              <button type="button" class="btn btn-danger" ng-click="reject(req.id)">
+                <span>{{ 'settings.user.reject' | translate }}</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col-md-8">
+    <div ui-view="user"></div>
+  </div>
+</div>

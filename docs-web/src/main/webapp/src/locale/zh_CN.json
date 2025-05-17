@@ -7,6 +7,7 @@
     "validation_code": "验证码",
     "remember_me": "记住我",
     "submit": "登录",
+    "register": "发送注册请求",
     "login_as_guest": "以游客身份登录",
     "login_failed_title": "登录失败",
     "login_failed_message": "用户名或密码不正确",
@@ -249,6 +250,10 @@
     "menu_server_logs": "服务器日志",
     "user": {
       "title": "用户 <small>管理</small>",
+      "requests": "注册请求",
+      "action": "操作",
+      "accept": "同意",
+      "reject": "拒绝",
       "add_user": "添加用户",
       "username": "用户名",
       "create_date": "创建日期",
@@ -491,6 +496,17 @@
     "next": "下一个",
     "first": "第一",
     "last": "持续"
+  },
+  "register": {
+    "title": "发送注册请求",
+    "message": "请输入您的信息在 Teedy 上注册。管理员将收到您的请求并进行处理。一旦申请被接受，您就可以登录了。",
+    "username": "用户名",
+    "email": "E-mail",
+    "password": "密码",
+    "sent_title": "注册请求已发送",
+    "sent_message": "注册请求已发送到管理员账户，请等待处理。",
+    "error_title": "注册请求出错",
+    "error_message": "无法发送注册请求，请联系您的管理员进行手动注册。"
   },
   "ok": "确认",
   "cancel": "取消",
