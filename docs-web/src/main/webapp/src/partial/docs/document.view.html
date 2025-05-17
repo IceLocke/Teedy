@@ -66,6 +66,11 @@
         <span class="label label-info pointer" ng-click="setSearch('tag:' + tag.name)" ng-style="{ 'background': tag.color }" invert-text-color="{{ tag.color }}">{{ tag.name }}</span>
       </li>
 	  </ul>
+
+    <div class="form-group">
+      <label>Translate </label>
+      <input type="checkbox" ng-model="translateStatus" ng-change="onTranslateStatusChange()">
+    </div>
 	</div>
 
   <div class="row">
