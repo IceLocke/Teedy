@@ -50,6 +50,7 @@ import com.sismics.util.context.ThreadLocalContext;
 import com.sismics.util.mime.MimeType;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -64,10 +65,15 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.core.UriBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.h2.security.SHA256;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -75,19 +81,19 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
+import java.time.Duration;
+import java.util.*;
 
 /**
  * Document REST resources.
@@ -96,6 +102,51 @@ import java.util.UUID;
  */
 @Path("/document")
 public class DocumentResource extends BaseResource {
+    private static final Logger logger = LoggerFactory.getLogger(DocumentResource.class);
+
+    public static String truncate(String q) {
+        if (q == null) {
+            return null;
+        }
+        int len = q.length();
+        return len <= 20 ? q : (q.substring(0, 10) + len + q.substring(len - 10, len));
+    }
+
+    public static String getDigest(String string) {
+        if (string == null) {
+            return null;
+        }
+        char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+        byte[] btInput = string.getBytes();
+        try {
+            MessageDigest mdInst = MessageDigest.getInstance("SHA-256");
+            mdInst.update(btInput);
+            byte[] md = mdInst.digest();
+            int j = md.length;
+            char str[] = new char[j * 2];
+            int k = 0;
+            for (byte byte0 : md) {
+                str[k++] = hexDigits[byte0 >>> 4 & 0xf];
+                str[k++] = hexDigits[byte0 & 0xf];
+            }
+            return new String(str);
+        } catch (NoSuchAlgorithmException e) {
+            return null;
+        }
+    }
+
+    private static String getFormDataAsString(Map<String, String> formData) {
+        StringBuilder formBodyBuilder = new StringBuilder();
+        for (Map.Entry<String, String> singleEntry : formData.entrySet()) {
+            if (formBodyBuilder.length() > 0) {
+                formBodyBuilder.append("&");
+            }
+            formBodyBuilder.append(URLEncoder.encode(singleEntry.getKey(), StandardCharsets.UTF_8));
+            formBodyBuilder.append("=");
+            formBodyBuilder.append(URLEncoder.encode(singleEntry.getValue(), StandardCharsets.UTF_8));
+        }
+        return formBodyBuilder.toString();
+    }
 
     /**
      * Returns a document.
@@ -177,8 +228,11 @@ public class DocumentResource extends BaseResource {
     public Response get(
             @PathParam("id") String documentId,
             @QueryParam("share") String shareId,
-            @QueryParam("files") Boolean files) {
+            @QueryParam("files") Boolean files,
+            @QueryParam("translate") Boolean translate) {
         authenticate();
+        if (translate == null)
+            translate = Boolean.FALSE;
 
         DocumentDao documentDao = new DocumentDao();
         DocumentDto documentDto = documentDao.getDocument(documentId, PermType.READ, getTargetIdList(shareId));
@@ -197,6 +251,65 @@ public class DocumentResource extends BaseResource {
                 .add("source", JsonUtil.nullable(documentDto.getSource()))
                 .add("subject", JsonUtil.nullable(documentDto.getSubject()))
                 .add("type", JsonUtil.nullable(documentDto.getType()));
+
+        String language = documentDto.getLanguage();
+        if (translate) {
+            logger.info("Start translating document");
+            String from = null, to = null;
+            if (language.equals("eng")) {
+                from = "en";
+                to = "zh-CHS";
+            } else if (language.equals("chi_sim")) {
+                from = "zh-CHS";
+                to = "en";
+            }
+            if (from != null) {
+                Map<String, String> formData = new HashMap<>();
+                String q = documentDto.getDescription();
+                String salt = UUID.randomUUID().toString();
+                String curtime = String.valueOf(System.currentTimeMillis() / 1000);
+                String signStr = "0e226153dea9fe26" + truncate(q) + salt + curtime + "xGv4r7AqENpqyOhnXLUg7g8M2K9eMjQd";
+                String sign = getDigest(signStr);
+
+                formData.put("q", q);
+                formData.put("from", from);
+                formData.put("to", to);
+                formData.put("appKey", "0e226153dea9fe26");
+                formData.put("salt", salt);
+                formData.put("sign", sign);
+                formData.put("signType", "v3");
+                formData.put("curtime", curtime);
+
+                logger.info(formData.toString());
+
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create("https://openapi.youdao.com/translate_html"))
+                        .timeout(Duration.ofMinutes(1))
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .header("Accept", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(getFormDataAsString(formData)))
+                        .build();
+                logger.info("Sending to translation api");
+                try {
+                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    if (jsonObject.has("data")) {
+                        logger.info("Translate success");
+                        String translateContent = jsonObject.getJSONObject("data").getString("translation");
+                        document.remove("description");
+                        document.add("description", translateContent);
+                    }
+                    else {
+                         logger.info("Translate failed");
+                         logger.info(jsonObject.getString("errorCode"));
+                    }
+                }
+                catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
+            }
+        }
 
         List<TagDto> tagDtoList = null;
         if (principal.isAnonymous()) {
