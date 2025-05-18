@@ -4,12 +4,25 @@
  * Document view controller.
  */
 angular.module('docs').controller('DocumentView', function ($scope, $rootScope, $state, $stateParams, $location, $dialog, $uibModal, Restangular, $translate) {
+  $scope.translateStatus = false;
+  
   // Load document data from server
   Restangular.one('document', $stateParams.id).get().then(function (data) {
     $scope.document = data;
   }, function (response) {
     $scope.error = response;
   });
+  
+  $scope.loadDocument = function () {
+    params = {
+      translate: $scope.translateStatus
+    }
+    Restangular.one('document', $stateParams.id).get(params).then(function (data) {
+      $scope.document = data;
+    }, function (response) {
+      $scope.error = response;
+    });
+  }
 
   // Load comments from server
   Restangular.one('comment', $stateParams.id).get().then(function (data) {
@@ -22,6 +35,12 @@ angular.module('docs').controller('DocumentView', function ($scope, $rootScope, 
    * Add a comment.
    */
   $scope.comment = '';
+
+  $scope.onTranslateStatusChange = function () {
+    console.log("translateStatus: " + $scope.translateStatus);
+    $scope.loadDocument();
+  }
+
   $scope.addComment = function () {
     if ($scope.comment.length === 0) {
       return;
