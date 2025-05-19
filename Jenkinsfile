@@ -7,7 +7,7 @@ pipeline {
       DOCKER_TAG = "${env.BUILD_NUMBER}"
       DEPLOYMENT_NAME = "hello-node"
       // hello-node-c56464b79-glpbt
-      CONTAINER_NAME = "hello-node-c56464b79-glpbt"
+      CONTAINER_NAME = "teedy"
       IMAGE_NAME = 'icelocke/teedy-app'
    }
 
