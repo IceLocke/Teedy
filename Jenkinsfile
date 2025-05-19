@@ -5,8 +5,9 @@ pipeline {
       DOCKER_HUB_CREDENTIALS = credentials('dockerhub_credentials')
       DOCKER_IMAGE = 'icelocke/teedy-app'
       DOCKER_TAG = "${env.BUILD_NUMBER}"
-      DEPLOYMENT_NAME = "teedy-deployment"
-      CONTAINER_NAME = "teedy-container"
+      DEPLOYMENT_NAME = "hello-node"
+      // hello-node-c56464b79-glpbt
+      CONTAINER_NAME = "hello-node-c56464b79-glpbt"
       IMAGE_NAME = 'icelocke/teedy-app'
    }
 
@@ -80,7 +81,7 @@ pipeline {
       steps {
          sh '''
          echo "Setting image for deployment..."
-         kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_NAME}:${DOCKER_TAG}
+         kubectl set image deployments/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_NAME}:${DOCKER_TAG}
          '''
       }
    }
