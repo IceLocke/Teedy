@@ -268,7 +268,7 @@ public class DocumentResource extends BaseResource {
                 String q = documentDto.getDescription();
                 String salt = UUID.randomUUID().toString();
                 String curtime = String.valueOf(System.currentTimeMillis() / 1000);
-                String signStr = "0e226153dea9fe26" + truncate(q) + salt + curtime + "xGv4r7AqENpqyOhnXLUg7g8M2K9eMjQd";
+                String signStr = "0e226153dea9fe26" + truncate(q) + salt + curtime + "wCMobbWthl4xuUZZY9hmDDEBObUHqbKx";
                 String sign = getDigest(signStr);
 
                 formData.put("q", q);
